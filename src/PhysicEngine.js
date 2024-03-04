@@ -59,7 +59,6 @@ export default class PhysicEngine {
 
 
     Runner.run(runner, this.engine);
-    console.log("Hello Engine");
   }
 }
 

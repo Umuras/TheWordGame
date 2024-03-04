@@ -145,16 +145,16 @@ export default class Game extends Container {
 
     OpenClickablePropertyBubbleSprites()
     {
-      for (let i = 0; i < this.bubbleSprites.length; i++) {
-        this.bubbleSprites[i].interactive = true;
-        this.bubbleSprites[i].buttonMode = true;
+      for (let i = 0; i < this.physic.objects.length; i++) {
+        this.physic.objects[i].sprite.interactive = true;
+        this.physic.objects[i].sprite.buttonMode = true;
       }
     }
     CloseClickablePropertyBubbleSprites = () =>
     {
       for (let i = 0; i < this.bubbleSprites.length; i++) {
-        this.bubbleSprites[i].interactive = false;
-        this.bubbleSprites[i].buttonMode = false;
+        this.physic.objects[i].sprite.interactive = false;
+        this.physic.objects[i].sprite.buttonMode = false;
       }
     }
 
@@ -186,7 +186,7 @@ export default class Game extends Container {
     }
     createTextOnGrayPane(letterText)
     {
-      this.orangePaneForWords.texture = Texture.from("green-pane");
+      this.orangePaneForWords.texture = Texture.from("gray-pane");
 
       const greenPaneTextStyle = new TextStyle({
         fontFamily: 'font',
@@ -307,17 +307,17 @@ export default class Game extends Container {
 
     ClearWordPaneTextAndChangeTexture = () =>
     {
+      if (this.level == 3) {
+        this.DeleteAllScene();
+        return;
+      }
+
       this.greenPaneText.text = "";
       this.orangePaneForWords.texture = Texture.from("orange-pane");
 
       this.removeChild(this.orangeInfoPane);
       this.removeChild(this.orangePaneInfoText);
       this.removeChild(this.tick);
-      
-      if (this.level == 3) {
-        this.DeleteAllScene();
-        return;
-      }
 
       this.controlWord = true;
       this.level++;
@@ -360,15 +360,19 @@ export default class Game extends Container {
     }
 
     DeleteAllScene = () => {
+
+      this.removeChild(this.orangePaneForWords);
+      this.removeChild(this.orangeInfoPane);
+      this.removeChild(this.tick);
+      this.removeChild(this.greenPaneText);
+      this.removeChild(this.orangePaneInfoText);
+
+
         for (let i = 0; i < this.bubbleSprites.length; i++) {
           this.removeChild(this.bubbleSprites[i]);
         }
 
         this.physic.removeWithArray(this.physic.objects);
 
-        this.removeChild(this.orangePaneForWords);
-        this.removeChild(this.orangeInfoPane);
-        this.removeChild(this.tick);
-        this.removeChild(this.greenPaneText);
     }
 }
