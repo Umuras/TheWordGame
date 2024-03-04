@@ -122,6 +122,7 @@ export default class Game extends Container {
       this.orangeInfoPane.y = 175;
       this.orangeInfoPane.width = 350;
       this.orangeInfoPane.height = 70;
+      this.orangeInfoPane.alpha = 0.5;
 
       this.orangeInfoPaneTextStyle = new TextStyle({
         fontFamily: 'font',
@@ -360,17 +361,15 @@ export default class Game extends Container {
     }
 
     DeleteAllScene = () => {
-
-      this.removeChild(this.orangePaneForWords);
-      this.removeChild(this.orangeInfoPane);
-      this.removeChild(this.tick);
-      this.removeChild(this.greenPaneText);
-      this.removeChild(this.orangePaneInfoText);
-
-
         for (let i = 0; i < this.bubbleSprites.length; i++) {
           this.removeChild(this.bubbleSprites[i]);
         }
+
+        this.removeChild(this.orangePaneForWords);
+        this.removeChild(this.orangeInfoPane);
+        this.removeChild(this.tick);
+        this.removeChild(this.greenPaneText);
+        this.removeChild(this.orangePaneInfoText);
 
         this.physic.removeWithArray(this.physic.objects);
 

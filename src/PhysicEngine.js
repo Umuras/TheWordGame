@@ -4,7 +4,7 @@ import { GAME_HEIGHT, GAME_WIDTH } from ".";
 
 export default class PhysicEngine {
   constructor() {
-    this.debug = false;
+    this.debug = true;
     this.objects = [];
     this.init();
   }
@@ -28,8 +28,8 @@ export default class PhysicEngine {
     for(let i = 0; i < array.length; i++)
     {
         let object = array[i];
+        World.remove(this.engine.world, object.body);
         this.objects.splice(this.objects.indexOf(object), 1);
-        Composite.clear(this.physic.engine.world, object.body);
     }
   }
 
