@@ -39,18 +39,19 @@ async function init() {
   
 
   app.ticker.add(() => {
-    for(let i = 0; i < physic.objects.length; i++)
+      for(let i = 0; i < physic.objects.length; i++)
     {
       let object = physic.objects[i];
       object.sprite.position = object.body.position;
       object.sprite.rotation = object.body.angle;
     }
 
-    for (let i = 0; i < game.bubbleSprites.length; i++) {
+     for (let i = 0; i < game.bubbleSprites.length; i++) {
       let bubbleSprite = game.bubbleSprites[i];
       let letter = game.bubbleWhiteTexts[i];
-      letter.transform.position = bubbleSprite.position;
-    }
+      letter.transform.position = bubbleSprite.transform.position;
+    } 
+    
     if (game.isAvailableGreenPaneText) {
       game.ControlGreenPaneText();
       if (game.controlWord) {
@@ -59,8 +60,6 @@ async function init() {
     }
   });
 
-
-  game.CreateInfoOrangePaneAndText();
   app.stage.addChild(game);
 }
 

@@ -26,9 +26,11 @@ export default class Game extends Container {
     this.WriteFirstLetter = true;
     this.bubbleSprites = [];
     this.bubbleWhiteTexts = [];
+    this.createdBubbleSprites = false;
+    this.i = 0;
+    this.promiseArr = [];
     this.deleteAllText;
     this.ControlGreenPaneText;
-    this.adjustNewIndex(this.letters);
     this.DeleteSelectedBubbleSpriteAndCreateNews;
     this.CloseClickablePropertyBubbleSprites;
     this.ControlLevelWords;
@@ -36,10 +38,11 @@ export default class Game extends Container {
     this.AddNewBubbleSprites;
     this.DeleteAllScene;
     this.physic = physic;
+    this.CreateBubbleSprite(this.firstWord, this.i, this.alphabet);
     this.init();
   }
   
-  init() {
+  async init() {
      let background = Sprite.from("background");
      background.anchor.set(0.5);
      this.addChild(background);
@@ -52,66 +55,30 @@ export default class Game extends Container {
      this.orangePaneForWords.anchor.set(0.5);
      this.addChild(this.orangePaneForWords);
      this.orangePaneForWords.scale.x = 0.85;
+     this.orangePaneForWords.x = 240;
+     this.orangePaneForWords.y = 625;
      
      let orangePaneForWordsBody = Bodies.rectangle(240, 625, this.orangePaneForWords.width, this.orangePaneForWords.height, { isStatic: true });
      this.physic.add(this.orangePaneForWords, orangePaneForWordsBody);
 
-     const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+     let alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
      this.levelWordsArray.push("WORD");
      this.levelWordsArray.push("MATE");
      this.levelWordsArray.push("MEAL");
      this.levelWordsArray.push("SON");
-     const firstWord = this.levelWordsArray[0].split('');
+     let firstWord = this.levelWordsArray[0].split('');
 
 
      for (let i = 0; i < 15; i++) {
-      var bubbleSprite = Sprite.from("bubble-white");
-      if (!this.clickableBalloonBorder) {
-        bubbleSprite.on('pointerdown', this.onClickSprite);
-      }
+      this.promiseArr.push(await this.CreateBubbleSprite(firstWord,i,alphabet));
+     }
 
-
-      bubbleSprite.y = 100;
-      bubbleSprite.anchor.set(0.5);
-      bubbleSprite.width = Math.floor(Math.random()*70)+70;
-      bubbleSprite.height = bubbleSprite.width;
- 
-      this.addChild(bubbleSprite);
-      this.bubbleSprites.push(bubbleSprite);
-
-      var bubbleSpriteBody = Bodies.circle(200, 200, bubbleSprite.width/2);
-      this.physic.add(bubbleSprite, bubbleSpriteBody);
-
-
-       const textStyle = new TextStyle({
-        fontFamily: 'font',
-        fontSize: 200,
-        fill: 'orange',
-        fontStyle: 'normal',
-        fontWeight: 'bold'
-       });
-
-       
-
-       if (i <= 3) {
-        this.bubbleText = new Text(firstWord[i], textStyle);
-        this.bubbleText.anchor.set(0.5);
-        this.addChild(this.bubbleText);
-        bubbleSprite.addChild(this.bubbleText);
-        this.bubbleWhiteTexts.push(this.bubbleText);
-       }
-
-       if (i > 3) {
-        this.randomIndex = Math.floor(Math.random() * alphabet.length);
-        this.randomLetter = alphabet[this.randomIndex];
-        this.bubbleText = new Text(this.randomLetter.toUpperCase(), textStyle);
-        this.bubbleText.anchor.set(0.5);
-        this.addChild(this.bubbleText);
-        bubbleSprite.addChild(this.bubbleText);
-        this.bubbleWhiteTexts.push(this.bubbleText);
-       }
-     
-     
+     try {
+      const results = Promise.all(this.promiseArr).then(() => {
+        this.CreateInfoOrangePaneAndText();
+      });
+     } catch (error) {
+      console.log(error);
      }
   }
     CreateInfoOrangePaneAndText(){
@@ -139,9 +106,8 @@ export default class Game extends Container {
       this.addChild(this.orangeInfoPane);
       this.addChild(this.orangePaneInfoText);
       this.OpenClickablePropertyBubbleSprites();
-      }, 1000);
-
       
+      }, 2000);
     }
 
     OpenClickablePropertyBubbleSprites()
@@ -171,7 +137,6 @@ export default class Game extends Container {
         this.deleteLetterOnGreenPaneText(clickedSprite.children[0]);
       }
       
-      console.log(clickedSprite.children[0].text);
       if (this.WriteFirstLetter)
       {
         this.orangeInfoPaneTextStyle.fontSize = 15;
@@ -248,15 +213,6 @@ export default class Game extends Container {
         }
       }
       this.clickableBalloonBorder = false;
-    }
-
-    adjustNewIndex = (letters) =>
-    {
-      this.bubbleSpriteWordMap.forEach((key,value) => {
-        for (let i = 0; i < letters.length; i++) {
-          console.log(letters[i]);
-        }
-      });
     }
 
     ControlGreenPaneText = () =>
@@ -374,4 +330,60 @@ export default class Game extends Container {
         this.physic.removeWithArray(this.physic.objects);
 
     }
+
+    CreateBubbleSprite = async (firstWord, i, alphabet) => 
+    {
+      if(firstWord != null)
+        {
+          var bubbleSprite = Sprite.from("bubble-white");
+          if (!this.clickableBalloonBorder) {
+            bubbleSprite.on('pointerdown', this.onClickSprite);
+          }
+        
+          bubbleSprite.x = Math.floor(Math.random() * (260 - 100 + 1)) + 100;
+          bubbleSprite.anchor.set(0.5);
+          bubbleSprite.width = Math.floor(Math.random()*70)+70;
+          bubbleSprite.height = bubbleSprite.width;
+        
+          this.addChild(bubbleSprite);
+          this.bubbleSprites.push(bubbleSprite);
+        
+          var bubbleSpriteBody = Bodies.circle(bubbleSprite.x, 200, bubbleSprite.width/2);
+          this.physic.add(bubbleSprite, bubbleSpriteBody);
+        
+        
+           const textStyle = new TextStyle({
+            fontFamily: 'font',
+            fontSize: 200,
+            fill: 'orange',
+            fontStyle: 'normal',
+            fontWeight: 'bold'
+           });
+        
+           
+        
+          if (i <= 3) {
+            this.bubbleText = new Text(firstWord[i], textStyle);
+            this.bubbleText.anchor.set(0.5);
+            this.addChild(this.bubbleText);
+            bubbleSprite.addChild(this.bubbleText);
+            this.bubbleWhiteTexts.push(this.bubbleText);
+           }
+        
+           
+        
+           if (i > 3) {
+            this.randomIndex = Math.floor(Math.random() * alphabet.length);
+            this.randomLetter = alphabet[this.randomIndex];
+            this.bubbleText = new Text(this.randomLetter.toUpperCase(), textStyle);
+            this.bubbleText.anchor.set(0.5);
+            this.addChild(this.bubbleText);
+            bubbleSprite.addChild(this.bubbleText);
+            this.bubbleWhiteTexts.push(this.bubbleText);
+        }
+      }
+        await new Promise(resolve => setTimeout(resolve,400));
+        
+} 
 }
+
