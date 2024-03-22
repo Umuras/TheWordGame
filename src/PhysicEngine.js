@@ -4,7 +4,7 @@ import { GAME_HEIGHT, GAME_WIDTH } from ".";
 
 export default class PhysicEngine {
   constructor() {
-    this.debug = true;
+    this.debug = false;
     this.objects = [];
     this.init();
   }

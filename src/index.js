@@ -58,9 +58,20 @@ async function init() {
         game.ControlLevelWords();
       }
     }
+
+    if (game.FinishedCreatingMouseCursorSprite) {
+      app.stage.interactive = true;
+      app.renderer.plugins.interaction.cursorStyles.default = 'none';
+      app.stage.on("pointermove",game.FollowMouseCursorSprite);
+    }
   });
 
+  
+
   app.stage.addChild(game);
+
+  
+ 
 }
 
 init();

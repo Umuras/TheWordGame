@@ -24,11 +24,14 @@ export default class Game extends Container {
     this.orangePaneInfoText;
     this.orangeInfoPaneTextStyle;
     this.WriteFirstLetter = true;
+    this.FinishedFirstLevelWord = false;
     this.bubbleSprites = [];
     this.bubbleWhiteTexts = [];
     this.createdBubbleSprites = false;
     this.i = 0;
     this.promiseArr = [];
+    this.mouseCursorSprite;
+    this.FinishedCreatingMouseCursorSprite = false;
     this.deleteAllText;
     this.ControlGreenPaneText;
     this.DeleteSelectedBubbleSpriteAndCreateNews;
@@ -68,6 +71,8 @@ export default class Game extends Container {
      this.levelWordsArray.push("SON");
      let firstWord = this.levelWordsArray[0].split('');
 
+     
+
 
      for (let i = 0; i < 15; i++) {
       this.promiseArr.push(await this.CreateBubbleSprite(firstWord,i,alphabet));
@@ -76,11 +81,41 @@ export default class Game extends Container {
      try {
       const results = Promise.all(this.promiseArr).then(() => {
         this.CreateInfoOrangePaneAndText();
+        this.CreateMouseCursorSprite();
+        this.FinishedCreatingMouseCursorSprite = true;
       });
      } catch (error) {
       console.log(error);
      }
+
+     
   }
+
+  CreateMouseCursorSprite()
+  {
+    this.mouseCursorSprite = Sprite.from("circleWhiteSmall");
+    this.mouseCursorSprite.anchor.set(0.5);
+    this.mouseCursorSprite.scale.x = 0.5;
+    this.mouseCursorSprite.scale.y = 0.5;
+    this.mouseCursorSprite.interactive = true;
+    this.mouseCursorSprite._tintRGB = 0;
+    this.mouseCursorSprite.alpha = 0.5;
+    this.mouseCursorSprite.interactive = true;
+    this.mouseCursorSprite.buttonMode = true;
+    this.mouseCursorSprite.on('pointerdown',this.ClickMouseSprite);
+    this.addChild(this.mouseCursorSprite);
+  }
+
+  FollowMouseCursorSprite = (e) => {
+      let pos = e.data.global;
+      this.mouseCursorSprite.x = pos.x;
+      this.mouseCursorSprite.y = pos.y;
+  }
+
+  ClickMouseSprite = (event) => {
+    console.log(event);
+  }
+
     CreateInfoOrangePaneAndText(){
       setTimeout(() => {
       this.orangeInfoPane = Sprite.from("orange-pane");
@@ -236,10 +271,13 @@ export default class Game extends Container {
         this.tick.interactive = true;
         this.tick.buttonMode = true;
         this.addChild(this.tick);
-        this.addChild(this.orangeInfoPane);
+        if (!this.FinishedFirstLevelWord) {
+          this.addChild(this.orangeInfoPane);
         this.addChild(this.orangePaneInfoText);
         this.orangeInfoPaneTextStyle.fontSize = 24;
         this.orangePaneInfoText.text = "TAP THE TICK TO CONFIRM";
+        }
+        
         this.CloseClickablePropertyBubbleSprites();
         this.tick.on('pointerdown', this.DeleteSelectedBubbleSpriteAndCreateNews);
       }
@@ -267,6 +305,10 @@ export default class Game extends Container {
       if (this.level == 3) {
         this.DeleteAllScene();
         return;
+      }
+
+      if (this.level == 0) {
+        this.FinishedFirstLevelWord = true;
       }
 
       this.greenPaneText.text = "";
